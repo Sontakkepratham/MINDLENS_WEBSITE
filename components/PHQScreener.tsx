@@ -25,9 +25,10 @@ const options = [
 interface PHQScreenerProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenBooking: () => void;
 }
 
-const PHQScreener: React.FC<PHQScreenerProps> = ({ isOpen, onClose }) => {
+const PHQScreener: React.FC<PHQScreenerProps> = ({ isOpen, onClose, onOpenBooking }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>(new Array(questions.length).fill(-1));
   const [showResult, setShowResult] = useState(false);
@@ -66,7 +67,7 @@ const PHQScreener: React.FC<PHQScreenerProps> = ({ isOpen, onClose }) => {
       aria-modal="true"
       aria-labelledby="phq9-title"
     >
-      <div className="bg-white w-full h-full md:h-auto md:max-w-2xl md:rounded-[40px] shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-500 flex flex-col">
+      <div className="bg-white w-full h-full md:h-auto md:max-w-2xl md:rounded-[40px] shadow-2xl overflow-hidden relative animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 flex flex-col">
         <button 
           onClick={onClose} 
           className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 focus-visible:ring-4 focus-visible:ring-calm-blue/20 rounded-full z-10 p-2 transition-all"
@@ -151,7 +152,7 @@ const PHQScreener: React.FC<PHQScreenerProps> = ({ isOpen, onClose }) => {
 
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
               <Button onClick={onClose} variant="outline" className="w-full sm:w-auto py-5 px-12 rounded-3xl">Dismiss</Button>
-              <Button onClick={() => { onClose(); document.getElementById('counselors')?.scrollIntoView({ behavior: 'smooth' }); }} variant="primary" className="w-full sm:w-auto py-5 px-12 rounded-3xl shadow-xl">Book Priority Session</Button>
+              <Button onClick={() => { onClose(); onOpenBooking(); }} variant="primary" className="w-full sm:w-auto py-5 px-12 rounded-3xl shadow-xl">Book Priority Session</Button>
             </div>
             
             <div className="mt-12 flex items-start sm:items-center justify-center gap-3 text-[10px] text-slate-400 font-bold uppercase tracking-tight max-w-sm mx-auto">

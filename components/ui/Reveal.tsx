@@ -12,31 +12,51 @@ export const Reveal: React.FC<RevealProps> = ({ children, width = '100%', delay 
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Check if observer is supported
+    if (!window.IntersectionObserver) {
+      setIsVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting || entry.intersectionRatio > 0) {
           setIsVisible(true);
-          observer.disconnect();
+          observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.1 }
+      { 
+        threshold: 0.01, // Very low threshold to ensure it triggers as soon as 1px is visible
+        rootMargin: '50px' // Start loading slightly before it enters the viewport
+      }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+      
+      // Fallback: If for some reason it's already in view but observer didn't fire
+      const rect = currentRef.getBoundingClientRect();
+      if (rect.top >= 0 && rect.top <= window.innerHeight) {
+        setIsVisible(true);
+      }
     }
 
     return () => {
-      if (ref.current) observer.unobserve(ref.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
     };
   }, []);
 
   return (
     <div 
       ref={ref} 
-      style={{ width }} 
-      className={`transition-all duration-1000 ease-out transform ${
-        isVisible ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-10 pointer-events-none'
+      style={{ width, minHeight: '1px' }} // min-height ensures the observer can "see" the container
+      className={`transition-all duration-1000 ease-out transform will-change-[opacity,transform] ${
+        isVisible 
+          ? 'opacity-100 translate-y-0 pointer-events-auto' 
+          : 'opacity-0 translate-y-12 pointer-events-none'
       }`} 
     >
       <div style={{ transitionDelay: `${delay}ms` }} className="h-full w-full">

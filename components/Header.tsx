@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { MoreVertical, X, ClipboardCheck, ArrowRight, Instagram, Linkedin } from 'lucide-react';
+import { MoreVertical, X, ClipboardCheck, ArrowRight, Instagram, Linkedin, CalendarDays } from 'lucide-react';
 import Button from './ui/Button';
 
 interface HeaderProps {
   onOpenScreener: () => void;
   onOpenEarlyAccess: () => void;
+  onOpenBooking: () => void;
   onNavigateHome: () => void;
   onNavigateAbout: () => void;
   onNavigateContact: () => void;
@@ -15,6 +16,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ 
   onOpenScreener, 
   onOpenEarlyAccess, 
+  onOpenBooking,
   onNavigateHome, 
   onNavigateAbout,
   onNavigateContact,
@@ -65,12 +67,21 @@ const Header: React.FC<HeaderProps> = ({
         <nav className="hidden lg:flex items-center space-x-10">
           <div className="flex items-center space-x-8 pr-10 border-r border-slate-200">
             {navLinks.map((link) => (
-              <button key={link.name} onClick={link.onClick} className={`text-sm font-bold transition-all hover:scale-105 ${link.active ? 'text-calm-blue' : 'text-slate-400 hover:text-slate-900'}`}>{link.name}</button>
+              <button 
+                key={link.name} 
+                onClick={link.onClick} 
+                className={`text-sm font-bold transition-all hover:scale-105 origin-center ${link.active ? 'text-calm-blue' : 'text-slate-400 hover:text-slate-900'}`}
+              >
+                {link.name}
+              </button>
             ))}
           </div>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
             <Button variant="outline" size="sm" onClick={onOpenScreener} className="px-6 rounded-xl border-slate-200 text-slate-600">Screener</Button>
-            <Button variant="primary" size="sm" onClick={onOpenEarlyAccess} className="px-6 rounded-xl">Waitlist</Button>
+            <Button variant="secondary" size="sm" onClick={onOpenEarlyAccess} className="px-6 rounded-xl">Waitlist</Button>
+            <Button variant="primary" size="sm" onClick={onOpenBooking} className="px-6 rounded-xl gap-2 shadow-xl shadow-calm-blue/20">
+              <CalendarDays size={16} /> Book Session
+            </Button>
           </div>
         </nav>
 
@@ -91,7 +102,10 @@ const Header: React.FC<HeaderProps> = ({
               ))}
             </div>
             <div className="mt-8 pt-8 border-t border-slate-100 grid gap-4">
-               <Button className="w-full py-5 rounded-3xl" onClick={() => handleMobileClick(onOpenEarlyAccess)}>Join Early Access</Button>
+               <Button variant="outline" className="w-full py-5 rounded-3xl text-lg" onClick={() => handleMobileClick(onOpenEarlyAccess)}>Join Early Access</Button>
+               <Button variant="primary" className="w-full py-5 rounded-3xl text-lg gap-2 shadow-xl shadow-calm-blue/20" onClick={() => handleMobileClick(onOpenBooking)}>
+                 <CalendarDays size={20} /> Book Online Session
+               </Button>
             </div>
           </div>
         </div>

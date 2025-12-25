@@ -15,7 +15,9 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   ...props 
 }) => {
-  const baseStyles = "relative inline-flex items-center justify-center rounded-2xl font-bold transition-all duration-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-calm-blue/40 disabled:opacity-50 active:scale-95 group overflow-hidden pointer-events-auto cursor-pointer";
+  // Refined transitions: explicitly targeting the properties that change for better performance and smoother feel.
+  // Using a custom cubic-bezier (easeOutQuint-inspired) for a more premium, responsive touch.
+  const baseStyles = "relative inline-flex items-center justify-center rounded-2xl font-bold transition-[transform,background-color,border-color,box-shadow,opacity] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] focus:outline-none focus-visible:ring-4 focus-visible:ring-calm-blue/40 disabled:opacity-50 active:scale-95 group overflow-hidden pointer-events-auto cursor-pointer";
   
   const variants = {
     primary: "bg-gradient-to-tr from-calm-blue to-soft-lavender text-white hover:from-[#3d5191] hover:to-[#5e71b2] shadow-[0_10px_20px_-5px_rgba(74,97,173,0.4)] hover:shadow-[0_15px_30px_-5px_rgba(74,97,173,0.5)]",
@@ -37,7 +39,8 @@ const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       <span className="relative z-20 pointer-events-none">{children}</span>
-      <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+      {/* Visual overlay for subtle lighting effect on hover */}
+      <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out z-10"></div>
     </button>
   );
 };

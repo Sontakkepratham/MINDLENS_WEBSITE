@@ -18,6 +18,8 @@ import Footer from './components/Footer';
 import AboutUsPage from './components/AboutUsPage';
 import ContactUsPage from './components/ContactUsPage';
 import LegalModal from './components/LegalModal';
+import OnboardingCarousel from './components/OnboardingCarousel';
+import QuoteBreak from './components/ui/QuoteBreak';
 import { ArrowUp } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -26,14 +28,28 @@ const App: React.FC = () => {
   const [isEarlyAccessOpen, setIsEarlyAccessOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isMessagingOpen, setIsMessagingOpen] = useState(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact'>('home');
   
   // Legal State
   const [legalType, setLegalType] = useState<'terms' | 'privacy' | 'hipaa' | null>(null);
 
+  // Initial Onboarding Check
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('mindlens_onboarded');
+    if (!hasSeenOnboarding) {
+      setIsOnboardingOpen(true);
+    }
+  }, []);
+
+  const handleCompleteOnboarding = () => {
+    localStorage.setItem('mindlens_onboarded', 'true');
+    setIsOnboardingOpen(false);
+  };
+
   // Body Scroll Lock logic for mobile
   useEffect(() => {
-    const isAnyModalOpen = isScreenerOpen || isEarlyAccessOpen || isBookingOpen || isMessagingOpen || !!legalType;
+    const isAnyModalOpen = isScreenerOpen || isEarlyAccessOpen || isBookingOpen || isMessagingOpen || isOnboardingOpen || !!legalType;
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100%';
@@ -45,7 +61,7 @@ const App: React.FC = () => {
       document.body.style.overflow = '';
       document.body.style.height = '';
     };
-  }, [isScreenerOpen, isEarlyAccessOpen, isBookingOpen, isMessagingOpen, legalType]);
+  }, [isScreenerOpen, isEarlyAccessOpen, isBookingOpen, isMessagingOpen, isOnboardingOpen, legalType]);
 
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 400);
@@ -61,11 +77,33 @@ const App: React.FC = () => {
       case 'contact': return <ContactUsPage />;
       default: return (
         <>
-          <Hero onOpenScreener={() => setIsScreenerOpen(true)} onOpenEarlyAccess={() => setIsEarlyAccessOpen(true)} />
-          <CoreInsight onOpenScreener={() => setIsScreenerOpen(true)} />
+          <Hero 
+            onOpenScreener={() => setIsScreenerOpen(true)} 
+            onOpenEarlyAccess={() => setIsEarlyAccessOpen(true)} 
+            onOpenBooking={() => setIsBookingOpen(true)}
+          />
+          <QuoteBreak 
+            quote="The mind is not a vessel to be filled, but a fire to be kindled."
+            author="Plutarch"
+            variant="blue"
+          />
+          <CoreInsight 
+            onOpenScreener={() => setIsScreenerOpen(true)} 
+            onOpenBooking={() => setIsBookingOpen(true)}
+          />
           <SkillLab />
+          <QuoteBreak 
+            quote="Artificial Intelligence is not a substitute for human intelligence; it is a tool to amplify it."
+            author="MindLens Ethos"
+            variant="purple"
+          />
           <AISupport />
           <Counselors onOpenBooking={() => setIsBookingOpen(true)} onOpenMessaging={() => setIsMessagingOpen(true)} />
+          <QuoteBreak 
+            quote="The meeting of two personalities is like the contact of two chemical substances: if there is any reaction, both are transformed."
+            author="Carl Jung"
+            variant="slate"
+          />
           <AboutUs onNavigateAbout={() => setCurrentPage('about')} />
           <Security />
         </>
@@ -75,10 +113,16 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white text-slate-800 antialiased overflow-x-hidden selection:bg-calm-blue/10 selection:text-calm-blue">
+      <OnboardingCarousel isOpen={isOnboardingOpen} onComplete={handleCompleteOnboarding} />
+      
       <Header 
-        onOpenScreener={() => setIsScreenerOpen(true)} onOpenEarlyAccess={() => setIsEarlyAccessOpen(true)}
-        onNavigateHome={() => setCurrentPage('home')} onNavigateAbout={() => setCurrentPage('about')}
-        onNavigateContact={() => setCurrentPage('contact')} currentPage={currentPage}
+        onOpenScreener={() => setIsScreenerOpen(true)} 
+        onOpenEarlyAccess={() => setIsEarlyAccessOpen(true)}
+        onOpenBooking={() => setIsBookingOpen(true)}
+        onNavigateHome={() => setCurrentPage('home')} 
+        onNavigateAbout={() => setCurrentPage('about')}
+        onNavigateContact={() => setCurrentPage('contact')} 
+        currentPage={currentPage}
       />
       
       <main className="relative">{renderContent()}</main>
@@ -91,7 +135,11 @@ const App: React.FC = () => {
         onOpenPrivacy={() => setLegalType('privacy')}
       />
       
-      <PHQScreener isOpen={isScreenerOpen} onClose={() => setIsScreenerOpen(false)} />
+      <PHQScreener 
+        isOpen={isScreenerOpen} 
+        onClose={() => setIsScreenerOpen(false)} 
+        onOpenBooking={() => setIsBookingOpen(true)}
+      />
       <EarlyAccessModal isOpen={isEarlyAccessOpen} onClose={() => setIsEarlyAccessOpen(false)} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
       <MessagingModal isOpen={isMessagingOpen} onClose={() => setIsMessagingOpen(false)} />
@@ -102,9 +150,12 @@ const App: React.FC = () => {
 
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-8 right-8 bg-calm-blue hover:bg-blue-600 text-white p-4 rounded-2xl shadow-2xl transition-all duration-500 z-[4000] ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+        className={`fixed bottom-8 right-8 bg-calm-blue hover:bg-blue-600 text-white p-4 rounded-2xl shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] z-[4000] hover:scale-110 active:scale-90 group ${
+          showScrollTop ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-12 pointer-events-none'
+        }`}
+        aria-label="Scroll to top"
       >
-        <ArrowUp size={24} strokeWidth={3} />
+        <ArrowUp size={24} strokeWidth={3} className="transition-transform group-hover:-translate-y-0.5" />
       </button>
     </div>
   );

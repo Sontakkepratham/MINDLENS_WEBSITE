@@ -25,22 +25,26 @@ const AboutUsPage: React.FC = () => {
       const prompt = index === 0 ? PROMPTS.psychology : PROMPTS.therapy;
       
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
+        model: 'gemini-3-flash-preview',
         contents: { parts: [{ text: prompt }] }
       });
 
       const part = response.candidates[0].content.parts.find((p: any) => p.inlineData);
       if (part) {
-        const newImages = [...images];
-        newImages[index] = `data:image/png;base64,${part.inlineData.data}`;
-        setImages(newImages);
+        setImages(prev => {
+          const next = [...prev];
+          next[index] = `data:image/png;base64,${part.inlineData.data}`;
+          return next;
+        });
       }
     } catch (error) {
       console.error(`Error generating image ${index}:`, error);
     } finally {
-      const resetLoadingStates = [...loadingStates];
-      resetLoadingStates[index] = false;
-      setLoadingStates(resetLoadingStates);
+      setLoadingStates(prev => {
+        const next = [...prev];
+        next[index] = false;
+        return next;
+      });
     }
   };
 
@@ -52,11 +56,11 @@ const AboutUsPage: React.FC = () => {
       
       const [resp1, resp2] = await Promise.all([
         ai.models.generateContent({
-          model: 'gemini-2.5-flash-image',
+          model: 'gemini-3-flash-preview',
           contents: { parts: [{ text: PROMPTS.psychology }] }
         }),
         ai.models.generateContent({
-          model: 'gemini-2.5-flash-image',
+          model: 'gemini-3-flash-preview',
           contents: { parts: [{ text: PROMPTS.therapy }] }
         })
       ]);
@@ -87,10 +91,25 @@ const AboutUsPage: React.FC = () => {
     generateBrandImages();
   }, []);
 
+  const ImagePlaceholder = ({ color }: { color: string }) => (
+    <div className="w-full h-full bg-slate-50 relative overflow-hidden flex flex-col items-center justify-center p-12">
+      <div className={`absolute inset-0 bg-gradient-to-tr ${color} opacity-5 animate-pulse-soft`}></div>
+      <div className="relative flex flex-col items-center gap-6">
+        <div className="w-20 h-20 rounded-full border-4 border-slate-100 border-t-calm-blue animate-spin shadow-inner"></div>
+        <div className="space-y-3 text-center">
+          <div className="h-2 w-32 bg-slate-200 rounded-full animate-pulse mx-auto"></div>
+          <div className="h-1.5 w-20 bg-slate-100 rounded-full animate-pulse mx-auto"></div>
+        </div>
+      </div>
+      {/* Decorative Shimmer */}
+      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 animate-[shimmer_2s_infinite]"></div>
+    </div>
+  );
+
   return (
-    <div className="pt-20 pb-20 lg:pb-32 bg-white overflow-hidden">
+    <div className="relative min-h-screen bg-mesh-gradient bg-mesh overflow-hidden">
       {/* Dynamic Hero Section */}
-      <section className="relative pt-16 sm:pt-24 pb-20 sm:pb-32 flex items-center justify-center min-h-[60vh] lg:min-h-[70vh] bg-mesh-gradient bg-mesh">
+      <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-32 flex items-center justify-center min-h-[60vh] lg:min-h-[70vh]">
         <div className="absolute inset-0 perspective-1000 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-40 h-40 sm:w-64 sm:h-64 bg-calm-blue/10 blur-[60px] sm:blur-[100px] animate-pulse-soft"></div>
           <div className="absolute bottom-1/4 right-1/4 w-60 h-60 sm:w-96 sm:h-96 bg-soft-lavender/10 blur-[80px] sm:blur-[120px] animate-pulse-soft" style={{ animationDelay: '2s' }}></div>
@@ -114,7 +133,7 @@ const AboutUsPage: React.FC = () => {
         </div>
       </section>
 
-      <div className="container mx-auto px-6 mt-16 sm:mt-32">
+      <div className="container mx-auto px-6 relative z-10">
         <div className="space-y-24 sm:space-y-40">
           {/* Psychology AI Section */}
           <Reveal>
@@ -131,15 +150,12 @@ const AboutUsPage: React.FC = () => {
               </div>
               <div className="relative group perspective-1000">
                 <div className="absolute -inset-4 bg-gradient-to-tr from-calm-blue to-soft-lavender opacity-10 blur-3xl rounded-[40px] sm:rounded-[60px]"></div>
-                <div className="relative rounded-[32px] sm:rounded-[50px] overflow-hidden bg-slate-100 shadow-xl border-2 sm:border-4 border-white card-3d aspect-square group">
+                <div className="relative rounded-[32px] sm:rounded-[50px] overflow-hidden bg-white shadow-xl border-2 sm:border-4 border-white card-3d aspect-square group">
                   {loadingStates[0] ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
-                      <Loader2 size={48} className="animate-spin text-calm-blue" />
-                      <p className="font-black text-[10px] uppercase tracking-widest">Rendering Vision...</p>
-                    </div>
+                    <ImagePlaceholder color="from-calm-blue" />
                   ) : (
                     <>
-                      <img src={images[0]} alt="Psychology AI" className="w-full h-full object-cover" />
+                      <img src={images[0]} alt="Psychology AI" className="w-full h-full object-cover transition-opacity duration-500" />
                       <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <Button 
                           variant="white" 
@@ -164,15 +180,12 @@ const AboutUsPage: React.FC = () => {
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
               <div className="order-2 lg:order-1 relative group perspective-1000">
                 <div className="absolute -inset-4 bg-gradient-to-bl from-soft-lavender to-calm-blue opacity-10 blur-3xl rounded-[40px] sm:rounded-[60px]"></div>
-                <div className="relative rounded-[32px] sm:rounded-[50px] overflow-hidden bg-slate-100 shadow-xl border-2 sm:border-4 border-white card-3d aspect-square group">
+                <div className="relative rounded-[32px] sm:rounded-[50px] overflow-hidden bg-white shadow-xl border-2 sm:border-4 border-white card-3d aspect-square group">
                   {loadingStates[1] ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
-                      <Loader2 size={48} className="animate-spin text-soft-lavender" />
-                      <p className="font-black text-[10px] uppercase tracking-widest">Synthesizing Care...</p>
-                    </div>
+                    <ImagePlaceholder color="from-soft-lavender" />
                   ) : (
                     <>
-                      <img src={images[1]} alt="Future Therapy" className="w-full h-full object-cover" />
+                      <img src={images[1]} alt="Future Therapy" className="w-full h-full object-cover transition-opacity duration-500" />
                       <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <Button 
                           variant="white" 
@@ -205,7 +218,7 @@ const AboutUsPage: React.FC = () => {
 
         {/* AI Visuals Lab Call to Action */}
         <Reveal>
-          <div className="mt-24 sm:mt-40 bg-slate-900 rounded-[40px] sm:rounded-[80px] p-10 sm:p-20 text-white text-center relative overflow-hidden group">
+          <div className="mt-24 sm:mt-40 mb-20 sm:mb-32 bg-slate-900 rounded-[40px] sm:rounded-[80px] p-10 sm:p-20 text-white text-center relative overflow-hidden group">
              <div className="absolute inset-0 bg-mesh-gradient opacity-10 animate-mesh bg-mesh"></div>
              <div className="relative z-10 max-w-3xl mx-auto">
                <div className="inline-flex items-center gap-3 px-4 py-2 bg-calm-blue/20 rounded-2xl text-[10px] font-black uppercase tracking-widest mb-8 border border-calm-blue/30">
@@ -236,6 +249,13 @@ const AboutUsPage: React.FC = () => {
           </div>
         </Reveal>
       </div>
+      <style>{`
+        @keyframes shimmer {
+          100% {
+            transform: translateX(100%);
+          }
+        }
+      `}</style>
     </div>
   );
 };

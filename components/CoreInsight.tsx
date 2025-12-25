@@ -6,9 +6,10 @@ import Button from './ui/Button';
 
 interface CoreInsightProps {
   onOpenScreener: () => void;
+  onOpenBooking: () => void;
 }
 
-const CoreInsight: React.FC<CoreInsightProps> = ({ onOpenScreener }) => {
+const CoreInsight: React.FC<CoreInsightProps> = ({ onOpenScreener, onOpenBooking }) => {
   const features = [
     {
       icon: <ClipboardList className="w-6 h-6 sm:w-8 sm:h-8 text-calm-blue" />,
@@ -20,13 +21,13 @@ const CoreInsight: React.FC<CoreInsightProps> = ({ onOpenScreener }) => {
       icon: <Users className="w-6 h-6 sm:w-8 sm:h-8 text-soft-lavender" />,
       title: "Verified Counselors",
       description: "Direct access to licensed therapists. No referral needed, no waiting lists.",
-      action: { label: "Browse Directory", onClick: () => document.getElementById('counselors')?.scrollIntoView({ behavior: 'smooth' }) }
+      action: { label: "Book Now", onClick: onOpenBooking }
     },
     {
       icon: <BrainCircuit className="w-6 h-6 sm:w-8 sm:h-8 text-calm-blue" />,
       title: "AI Synthesis",
       description: "Our AI engine tracks your progress and prepares briefing notes for your counselor.",
-      action: { label: "Learn More", onClick: () => {} }
+      action: { label: "Learn More", onClick: () => document.getElementById('ai-support')?.scrollIntoView({ behavior: 'smooth' }) }
     }
   ];
 
