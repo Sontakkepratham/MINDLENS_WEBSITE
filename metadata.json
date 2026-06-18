@@ -3,5 +3,8 @@
   "description": "Professional high-converting landing page for the MindLens mental wellness app featuring spatial emotional intelligence and live clinical AI support.",
   "requestFramePermissions": [
     "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
 }

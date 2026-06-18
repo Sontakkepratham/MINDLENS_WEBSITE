@@ -5,7 +5,12 @@ import { GoogleGenAI } from '@google/genai';
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle2, MessageSquare, HelpCircle, Instagram, Linkedin } from 'lucide-react';
 import Button from './ui/Button';
 
-const ContactUsPage: React.FC = () => {
+interface ContactUsPageProps {
+  onOpenBooking: () => void;
+  onOpenScreener: () => void;
+}
+
+const ContactUsPage: React.FC<ContactUsPageProps> = ({ onOpenBooking, onOpenScreener }) => {
   const [supportImage, setSupportImage] = useState<string>('');
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [formState, setFormState] = useState({
@@ -18,9 +23,9 @@ const ContactUsPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const phoneNumber = "+91 93214 08094";
-  const cleanPhone = "919321408094";
-  const instagramUrl = "https://www.instagram.com/yourmindlens?igsh=Y3hmMXlnZTB6cjRy";
+  const phoneNumber = "+91 97023 53674";
+  const cleanPhone = "919702353674";
+  const instagramUrl = "https://www.instagram.com/mindlenss/";
   const linkedinUrl = "https://www.linkedin.com/company/ngcreationsofficial/";
 
   const generateSupportImage = async () => {
@@ -79,7 +84,7 @@ const ContactUsPage: React.FC = () => {
           <Reveal>
             <div className="space-y-12">
               <div className="relative group rounded-[40px] overflow-hidden shadow-2xl bg-slate-100 aspect-[4/3]">
-                {isLoadingImage ? (
+                {isLoadingImage || !supportImage ? (
                   <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
                     <Loader2 size={48} className="animate-spin text-calm-blue" />
                     <p className="font-medium animate-pulse">Visualizing support...</p>
@@ -137,7 +142,7 @@ const ContactUsPage: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-900">Instagram</h4>
-                    <p className="text-sm text-slate-600">@yourmindlens</p>
+                    <p className="text-sm text-slate-600">@mindlenss</p>
                     <p className="text-xs text-slate-400 mt-1">Daily Wellness Tips</p>
                   </div>
                 </a>
@@ -283,7 +288,7 @@ const ContactUsPage: React.FC = () => {
               <div className="p-8 bg-slate-50 rounded-3xl">
                 <h4 className="font-bold text-slate-900 mb-3">Is MindLens covered by insurance?</h4>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  We are currently finalizing partnerships with several major insurance providers. At this stage, sessions with Dr. Nidhi can be claimed as out-of-network services.
+                  We are currently finalizing partnerships with several major insurance providers. At this stage, sessions with Psychologist Nidhi can be claimed as out-of-network services.
                 </p>
               </div>
               <div className="p-8 bg-slate-50 rounded-3xl">
@@ -304,6 +309,22 @@ const ContactUsPage: React.FC = () => {
                   Our companion uses a fine-tuned clinical LLM to provide active listening and science-based coping strategies (CBT/ACT) in real-time.
                 </p>
               </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Call to Action Section */}
+        <Reveal>
+          <div className="mt-24 py-16 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="max-w-xl text-center md:text-left">
+              <h2 className="text-3xl font-black text-slate-900 mb-4">Ready to Get Started?</h2>
+              <p className="text-slate-500 font-medium leading-relaxed">
+                You do not have to wait for an inquiry response. Take our free, clinically validated PHQ-9 screener now or secure your session immediately.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+              <Button onClick={onOpenScreener} variant="outline" className="w-full sm:w-auto py-5 px-8 rounded-2xl font-bold border-slate-200 hover:border-calm-blue hover:text-calm-blue">Launch Free Screener</Button>
+              <Button onClick={onOpenBooking} variant="primary" className="w-full sm:w-auto py-5 px-8 rounded-2xl font-black shadow-xl shadow-calm-blue/20">Book Clinical Session</Button>
             </div>
           </div>
         </Reveal>

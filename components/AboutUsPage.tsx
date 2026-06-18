@@ -5,7 +5,12 @@ import { GoogleGenAI } from '@google/genai';
 import { Sparkles, History, Heart, Target, Loader2, RefreshCw, Wand2, Info } from 'lucide-react';
 import Button from './ui/Button';
 
-const AboutUsPage: React.FC = () => {
+interface AboutUsPageProps {
+  onOpenBooking: () => void;
+  onOpenScreener: () => void;
+}
+
+const AboutUsPage: React.FC<AboutUsPageProps> = ({ onOpenBooking, onOpenScreener }) => {
   const [images, setImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStates, setLoadingStates] = useState<boolean[]>([false, false]);
@@ -25,12 +30,12 @@ const AboutUsPage: React.FC = () => {
       const prompt = index === 0 ? PROMPTS.psychology : PROMPTS.therapy;
       
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-2.5-flash-image',
         contents: { parts: [{ text: prompt }] }
       });
 
       const part = response.candidates[0].content.parts.find((p: any) => p.inlineData);
-      if (part) {
+      if (part && part.inlineData) {
         setImages(prev => {
           const next = [...prev];
           next[index] = `data:image/png;base64,${part.inlineData.data}`;
@@ -56,31 +61,37 @@ const AboutUsPage: React.FC = () => {
       
       const [resp1, resp2] = await Promise.all([
         ai.models.generateContent({
-          model: 'gemini-3-flash-preview',
+          model: 'gemini-2.5-flash-image',
           contents: { parts: [{ text: PROMPTS.psychology }] }
         }),
         ai.models.generateContent({
-          model: 'gemini-3-flash-preview',
+          model: 'gemini-2.5-flash-image',
           contents: { parts: [{ text: PROMPTS.therapy }] }
         })
       ]);
 
       const getBase64 = (response: any) => {
         const part = response.candidates[0].content.parts.find((p: any) => p.inlineData);
-        return part ? `data:image/png;base64,${part.inlineData.data}` : '';
+        return part && part.inlineData ? `data:image/png;base64,${part.inlineData.data}` : '';
       };
 
-      const result = [getBase64(resp1), getBase64(resp2)].filter(Boolean);
-      if (result.length > 0) setImages(result);
-      else throw new Error("No images generated");
+      const img1 = getBase64(resp1);
+      const img2 = getBase64(resp2);
+
+      if (img1 || img2) {
+        setImages([img1 || images[0], img2 || images[1]].filter(Boolean));
+      } else {
+        throw new Error("No images generated");
+      }
 
     } catch (error) {
       console.error("Error generating brand images:", error);
-      // Fallback images from Unsplash if API fails
-      setImages([
-        "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200",
-        "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=1200"
-      ]);
+      if (images.length === 0) {
+        setImages([
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200",
+          "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=1200"
+        ]);
+      }
     } finally {
       setIsLoading(false);
       setLoadingStates([false, false]);
@@ -101,25 +112,32 @@ const AboutUsPage: React.FC = () => {
           <div className="h-1.5 w-20 bg-slate-100 rounded-full animate-pulse mx-auto"></div>
         </div>
       </div>
-      {/* Decorative Shimmer */}
       <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 animate-[shimmer_2s_infinite]"></div>
     </div>
   );
 
   return (
     <div className="relative min-h-screen bg-mesh-gradient bg-mesh overflow-hidden">
+      {/* Dynamic Animated Background Layers */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[10%] left-[5%] w-[400px] h-[400px] bg-calm-blue/10 blur-[100px] rounded-full animate-float-slow"></div>
+        <div className="absolute top-[60%] right-[10%] w-[500px] h-[500px] bg-soft-lavender/10 blur-[120px] rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[40%] left-[60%] w-[300px] h-[300px] bg-blue-300/5 blur-[80px] rounded-full animate-pulse-soft"></div>
+        <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
+      </div>
+
       {/* Dynamic Hero Section */}
       <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-32 flex items-center justify-center min-h-[60vh] lg:min-h-[70vh]">
-        <div className="absolute inset-0 perspective-1000 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-40 h-40 sm:w-64 sm:h-64 bg-calm-blue/10 blur-[60px] sm:blur-[100px] animate-pulse-soft"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-60 h-60 sm:w-96 sm:h-96 bg-soft-lavender/10 blur-[80px] sm:blur-[120px] animate-pulse-soft" style={{ animationDelay: '2s' }}></div>
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="container mx-auto px-6 relative z-10 text-center">
           <Reveal>
-            <div className="max-w-5xl mx-auto text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/50 backdrop-blur-md text-calm-blue rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest mb-6 sm:mb-10 border border-white/50 shadow-sm">
-                <History size={14} /> The Genesis
+            <div className="max-w-5xl mx-auto">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6 sm:mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/70 backdrop-blur-md text-calm-blue rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest border border-white shadow-sm">
+                  <History size={14} /> The Genesis
+                </div>
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 bg-white/70 backdrop-blur-md text-slate-500 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest border border-white shadow-sm">
+                  An Initiative by Gadoya Group Of Companies Pvt Ltd
+                </div>
               </div>
               <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-slate-900 mb-6 sm:mb-10 leading-[1.1] sm:leading-[1] tracking-tighter">
                 A Spatial Leap in <br />
@@ -134,6 +152,37 @@ const AboutUsPage: React.FC = () => {
       </section>
 
       <div className="container mx-auto px-6 relative z-10">
+        {/* Mission & Vision Section */}
+        <Reveal>
+          <div className="grid md:grid-cols-2 gap-8 mb-24 sm:mb-40">
+            <div className="glass-card p-8 sm:p-12 rounded-[32px] sm:rounded-[40px] border border-white flex flex-col justify-between transform hover:-translate-y-2 transition-all duration-300 shadow-[0_30px_60px_-15px_rgba(74,97,173,0.08)]">
+              <div>
+                <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-calm-blue mb-6">
+                  <Target size={24} />
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4 tracking-tight">Our Mission</h3>
+                <p className="text-slate-500 font-medium leading-relaxed mb-6">
+                  To democratize emotional intelligence and high-caliber psychology care through spatial visualization, immersive evidence-based tools, and clinical transparency. We empower individuals to visualize their emotional states and process them constructively.
+                </p>
+              </div>
+              <div className="text-calm-blue font-black tracking-widest text-[10px] uppercase">Empowering Everyday Minds</div>
+            </div>
+            
+            <div className="glass-card p-8 sm:p-12 rounded-[32px] sm:rounded-[40px] border border-white flex flex-col justify-between transform hover:-translate-y-2 transition-all duration-300 shadow-[0_30px_60px_-15px_rgba(113,136,214,0.08)]">
+              <div>
+                <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-soft-lavender mb-6">
+                  <Sparkles size={24} />
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4 tracking-tight">Our Vision</h3>
+                <p className="text-slate-500 font-medium leading-relaxed mb-6">
+                  To establish a world where mental well-being is not just active in crisis, but integrated effortlessly into daily human growth. We envision MindLens as the global gold standard for spatial-enhanced cognitive therapy and clinical AI integration.
+                </p>
+              </div>
+              <div className="text-soft-lavender font-black tracking-widest text-[10px] uppercase">Reimagining Cognitive Evolution</div>
+            </div>
+          </div>
+        </Reveal>
+
         <div className="space-y-24 sm:space-y-40">
           {/* Psychology AI Section */}
           <Reveal>
@@ -151,7 +200,7 @@ const AboutUsPage: React.FC = () => {
               <div className="relative group perspective-1000">
                 <div className="absolute -inset-4 bg-gradient-to-tr from-calm-blue to-soft-lavender opacity-10 blur-3xl rounded-[40px] sm:rounded-[60px]"></div>
                 <div className="relative rounded-[32px] sm:rounded-[50px] overflow-hidden bg-white shadow-xl border-2 sm:border-4 border-white card-3d aspect-square group">
-                  {loadingStates[0] ? (
+                  {loadingStates[0] || !images[0] ? (
                     <ImagePlaceholder color="from-calm-blue" />
                   ) : (
                     <>
@@ -181,7 +230,7 @@ const AboutUsPage: React.FC = () => {
               <div className="order-2 lg:order-1 relative group perspective-1000">
                 <div className="absolute -inset-4 bg-gradient-to-bl from-soft-lavender to-calm-blue opacity-10 blur-3xl rounded-[40px] sm:rounded-[60px]"></div>
                 <div className="relative rounded-[32px] sm:rounded-[50px] overflow-hidden bg-white shadow-xl border-2 sm:border-4 border-white card-3d aspect-square group">
-                  {loadingStates[1] ? (
+                  {loadingStates[1] || !images[1] ? (
                     <ImagePlaceholder color="from-soft-lavender" />
                   ) : (
                     <>
@@ -246,6 +295,22 @@ const AboutUsPage: React.FC = () => {
                  </div>
                </div>
              </div>
+          </div>
+        </Reveal>
+
+        {/* Call to Action Section */}
+        <Reveal>
+          <div className="mt-20 py-16 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="max-w-xl text-center md:text-left">
+              <h2 className="text-3xl font-black text-slate-900 mb-4">Start Your Healing Journey Today.</h2>
+              <p className="text-slate-500 font-medium leading-relaxed">
+                Take our standardized clinical screener to establish your baseline or book a direct premium session with Psychologist Nidhi Gadoya.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+              <Button onClick={onOpenScreener} variant="outline" className="w-full sm:w-auto py-5 px-8 rounded-2xl font-bold border-slate-200 hover:border-calm-blue hover:text-calm-blue">Launch Free Screener</Button>
+              <Button onClick={onOpenBooking} variant="primary" className="w-full sm:w-auto py-5 px-8 rounded-2xl font-black shadow-xl shadow-calm-blue/20">Book Clinical Session</Button>
+            </div>
           </div>
         </Reveal>
       </div>

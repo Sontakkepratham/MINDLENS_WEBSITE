@@ -31,7 +31,7 @@ const slides = [
     id: 'clinical',
     title: 'Direct Clinical Connection',
     subtitle: 'Locked-in Growth Path',
-    description: 'Transition seamlessly from self-care to professional guidance. Direct access to Dr. Nidhi Gadoya ensures your AI insights translate into real-world breakthroughs.',
+    description: 'Transition seamlessly from self-care to professional guidance. Direct access to Psychologist Nidhi Gadoya ensures your AI insights translate into real-world breakthroughs.',
     icon: <HeartHandshake size={48} className="text-calm-blue" />,
     color: 'bg-indigo-50',
     accent: 'text-calm-blue'

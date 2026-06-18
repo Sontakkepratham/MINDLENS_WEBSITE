@@ -16,7 +16,7 @@ const Counselors: React.FC<CounselorsProps> = ({ onOpenBooking, onOpenMessaging 
         <Reveal>
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
             <span className="text-calm-blue font-bold tracking-wider uppercase text-[10px] sm:text-sm mb-2 block">Our Primary Expert</span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4 leading-tight">Science-Backed Care from Dr. Nidhi Gadoya</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4 leading-tight">Science-Backed Care from Psychologist Nidhi Gadoya</h2>
             <p className="text-base sm:text-lg text-slate-600">
               Personalized mental health support led by clinical expertise. Connect directly with our lead consultant for guided wellness.
             </p>
@@ -31,8 +31,8 @@ const Counselors: React.FC<CounselorsProps> = ({ onOpenBooking, onOpenMessaging 
               <div className="lg:w-2/5 relative overflow-hidden group h-[400px] sm:h-[500px] lg:h-auto">
                 <img 
                   src="https://drive.google.com/thumbnail?id=1RT3NZdXzPcur9x7nuxtj_X987b8sNEKN&sz=w1000" 
-                  alt="Dr. Nidhi Gadoya" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 bg-slate-200"
+                  alt="Psychologist Nidhi Gadoya" 
+                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 bg-slate-200"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1559839734-2b71f1536780?auto=format&fit=crop&q=80&w=800&h=1200';
                   }}

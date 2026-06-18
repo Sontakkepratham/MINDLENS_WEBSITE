@@ -10,7 +10,8 @@ interface HeaderProps {
   onNavigateHome: () => void;
   onNavigateAbout: () => void;
   onNavigateContact: () => void;
-  currentPage: 'home' | 'about' | 'contact';
+  onNavigatePlatform?: () => void;
+  currentPage: 'home' | 'about' | 'contact' | 'platform';
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -20,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({
   onNavigateHome, 
   onNavigateAbout,
   onNavigateContact,
+  onNavigatePlatform,
   currentPage 
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,6 +46,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const navLinks = [
     { name: 'Home', onClick: onNavigateHome, active: currentPage === 'home' },
+    { name: 'Platform', onClick: onNavigatePlatform || (() => {}), active: currentPage === 'platform' },
     { name: 'About', onClick: onNavigateAbout, active: currentPage === 'about' },
     { name: 'Counselors', onClick: () => handleSectionNav('counselors'), active: false },
     { name: 'Contact', onClick: onNavigateContact, active: currentPage === 'contact' },

@@ -12,7 +12,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onOpenScreener, onOpenEarlyAccess, onOpenBooking }) => {
   return (
-    <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-40 overflow-hidden bg-mesh-gradient bg-mesh min-h-[90vh] flex items-center">
+    <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-40 bg-mesh-gradient bg-mesh min-h-[90vh] flex items-center overflow-x-clip">
       
       {/* Background Knowledge Fragments - To fill the "Blank Space" */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
@@ -81,7 +81,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenScreener, onOpenEarlyAccess, onOpenBo
                     <div className="overflow-hidden rounded-[36px] w-[260px] h-[340px] sm:w-[360px] sm:h-[480px]">
                       <img 
                         src="https://drive.google.com/thumbnail?id=1RT3NZdXzPcur9x7nuxtj_X987b8sNEKN&sz=w1000" 
-                        className="w-full h-full object-cover bg-slate-100 transition-transform duration-700 group-hover:scale-105" 
+                        className="w-full h-full object-cover object-top bg-slate-100 transition-transform duration-700 group-hover:scale-105" 
                         alt="Lead Clinical Psychologist"
                         loading="eager"
                       />
